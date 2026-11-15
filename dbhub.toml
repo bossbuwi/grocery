@@ -1,0 +1,15 @@
+[[sources]]
+id = "grocery"
+dsn = "postgres://${DB_USERNAME}:${DB_PASSWORD}@localhost:5432/grocery"
+query_timeout = 5
+pool_max_connections = 2
+
+[[tools]]
+name = "execute_sql"
+source = "grocery"
+readonly = true
+max_rows = 100
+
+[[tools]]
+name = "search_objects"
+source = "grocery"
