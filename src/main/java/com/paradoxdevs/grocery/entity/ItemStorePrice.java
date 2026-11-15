@@ -18,23 +18,23 @@ import java.math.BigDecimal;
 
 @Entity
 @Table(
-        name = "grocery_store_prices",
+        name = "item_store_prices",
         uniqueConstraints = @UniqueConstraint(
-                name = "uk_grocery_store_prices_grocery_store",
-                columnNames = {"grocery_id", "store_id"}
+                name = "uk_item_store_prices_item_store",
+                columnNames = {"item_id", "store_id"}
         )
 )
 @Getter
 @Setter
 @NoArgsConstructor
-public class GroceryStorePrice {
+public class ItemStorePrice {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "grocery_id", nullable = false)
-    private Grocery grocery;
+    @JoinColumn(name = "item_id", nullable = false)
+    private Item item;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "store_id", nullable = false)

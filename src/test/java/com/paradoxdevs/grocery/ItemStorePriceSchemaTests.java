@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
 @Transactional
-class GroceryStorePriceSchemaTests {
+class ItemStorePriceSchemaTests {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
@@ -25,36 +25,36 @@ class GroceryStorePriceSchemaTests {
         long storeBId = insertStore("Grocery B");
 
         jdbcTemplate.update(
-                "INSERT INTO grocery_store_prices (grocery_id, store_id, price) VALUES (?, ?, ?)",
+                "INSERT INTO item_store_prices (item_id, store_id, price) VALUES (?, ?, ?)",
                 groceryId, storeAId, new BigDecimal("1.00"));
         jdbcTemplate.update(
-                "INSERT INTO grocery_store_prices (grocery_id, store_id, price) VALUES (?, ?, ?)",
+                "INSERT INTO item_store_prices (item_id, store_id, price) VALUES (?, ?, ?)",
                 groceryId, storeBId, new BigDecimal("2.00"));
 
         assertEquals(2, jdbcTemplate.queryForObject(
-                "SELECT COUNT(*) FROM grocery_store_prices WHERE grocery_id = ?",
+                "SELECT COUNT(*) FROM item_store_prices WHERE item_id = ?",
                 Integer.class, groceryId));
         assertThrows(DataIntegrityViolationException.class, () -> jdbcTemplate.update(
-                "INSERT INTO grocery_store_prices (grocery_id, store_id, price) VALUES (?, ?, ?)",
+                "INSERT INTO item_store_prices (item_id, store_id, price) VALUES (?, ?, ?)",
                 groceryId, storeAId, new BigDecimal("1.50")));
     }
 
     @Test
     void barcodeIsOptionalButUniqueWhenPresent() {
         insertGrocery("Cereal X", "0009876543210");
-        jdbcTemplate.update("INSERT INTO groceries (name) VALUES (?)", "Unbarcoded Item A");
-        jdbcTemplate.update("INSERT INTO groceries (name) VALUES (?)", "Unbarcoded Item B");
+        jdbcTemplate.update("INSERT INTO items (name) VALUES (?)", "Unbarcoded Item A");
+        jdbcTemplate.update("INSERT INTO items (name) VALUES (?)", "Unbarcoded Item B");
 
         assertEquals(2, jdbcTemplate.queryForObject(
-                "SELECT COUNT(*) FROM groceries WHERE barcode IS NULL", Integer.class));
+                "SELECT COUNT(*) FROM items WHERE barcode IS NULL", Integer.class));
         assertThrows(DataIntegrityViolationException.class, () ->
                 insertGrocery("Duplicate Barcode Item", "0009876543210"));
     }
 
     private long insertGrocery(String name, String barcode) {
-        jdbcTemplate.update("INSERT INTO groceries (name, barcode) VALUES (?, ?)", name, barcode);
+        jdbcTemplate.update("INSERT INTO items (name, barcode) VALUES (?, ?)", name, barcode);
         return jdbcTemplate.queryForObject(
-                "SELECT id FROM groceries WHERE barcode = ?", Long.class, barcode);
+                "SELECT id FROM items WHERE barcode = ?", Long.class, barcode);
     }
 
     private long insertStore(String name) {

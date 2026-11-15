@@ -5,7 +5,7 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
         https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
     <changeSet id="1" author="grocery">
-        <createTable tableName="groceries">
+        <createTable tableName="items">
             <column name="id" type="BIGINT" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
@@ -15,8 +15,8 @@
             <column name="barcode" type="VARCHAR(255)"/>
         </createTable>
         <addUniqueConstraint
-                tableName="groceries"
+                tableName="items"
                 columnNames="barcode"
-                constraintName="uk_groceries_barcode"/>
+                constraintName="uk_items_barcode"/>
     </changeSet>
 </databaseChangeLog>

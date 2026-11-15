@@ -5,11 +5,11 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
         https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
     <changeSet id="3" author="grocery">
-        <createTable tableName="grocery_store_prices">
+        <createTable tableName="item_store_prices">
             <column name="id" type="BIGINT" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="grocery_id" type="BIGINT">
+            <column name="item_id" type="BIGINT">
                 <constraints nullable="false"/>
             </column>
             <column name="store_id" type="BIGINT">
@@ -21,20 +21,20 @@
         </createTable>
 
         <addForeignKeyConstraint
-                baseTableName="grocery_store_prices"
-                baseColumnNames="grocery_id"
-                constraintName="fk_grocery_store_prices_grocery"
-                referencedTableName="groceries"
+                baseTableName="item_store_prices"
+                baseColumnNames="item_id"
+                constraintName="fk_item_store_prices_item"
+                referencedTableName="items"
                 referencedColumnNames="id"/>
         <addForeignKeyConstraint
-                baseTableName="grocery_store_prices"
+                baseTableName="item_store_prices"
                 baseColumnNames="store_id"
-                constraintName="fk_grocery_store_prices_store"
+                constraintName="fk_item_store_prices_store"
                 referencedTableName="stores"
                 referencedColumnNames="id"/>
         <addUniqueConstraint
-                tableName="grocery_store_prices"
-                columnNames="grocery_id, store_id"
-                constraintName="uk_grocery_store_prices_grocery_store"/>
+                tableName="item_store_prices"
+                columnNames="item_id, store_id"
+                constraintName="uk_item_store_prices_item_store"/>
     </changeSet>
 </databaseChangeLog>
