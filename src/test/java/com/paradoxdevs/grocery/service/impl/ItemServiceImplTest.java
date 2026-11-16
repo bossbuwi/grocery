@@ -22,6 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -89,6 +90,36 @@ class ItemServiceImplTest {
         assertEquals("Milk X", response.getName());
         assertEquals("0001234567890", response.getBarcode());
         verify(itemRepository).findById(42L);
+    }
+
+    @Test
+    void updateByIdUpdatesAndMapsExistingItem() {
+        Item existingItem = item(42L, "Old name", "old-barcode");
+        ItemRequest request = new ItemRequest();
+        request.setName("Milk X");
+        request.setBarcode("0001234567890");
+        when(itemRepository.findById(42L)).thenReturn(Optional.of(existingItem));
+        when(itemRepository.save(any(Item.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        ItemResponse response = itemService.updateById(42L, request).orElseThrow();
+
+        assertEquals(42L, response.getId());
+        assertEquals("Milk X", response.getName());
+        assertEquals("0001234567890", response.getBarcode());
+        verify(itemRepository).save(existingItem);
+    }
+
+    @Test
+    void updateByIdReturnsEmptyWhenItemDoesNotExist() {
+        ItemRequest request = new ItemRequest();
+        request.setName("Milk X");
+        request.setBarcode("0001234567890");
+        when(itemRepository.findById(404L)).thenReturn(Optional.empty());
+
+        assertTrue(itemService.updateById(404L, request).isEmpty());
+
+        verify(itemRepository).findById(404L);
+        verify(itemRepository, never()).save(any(Item.class));
     }
 
     @Test

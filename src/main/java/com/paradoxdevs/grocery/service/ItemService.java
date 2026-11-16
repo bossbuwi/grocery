@@ -9,6 +9,8 @@ import java.util.Optional;
 public interface ItemService {
     ItemResponse create(ItemRequest itemRequest);
 
+    Optional<ItemResponse> updateById(Long id, ItemRequest itemRequest);
+
     Optional<ItemResponse> findById(Long id);
 
     boolean deleteById(Long id);

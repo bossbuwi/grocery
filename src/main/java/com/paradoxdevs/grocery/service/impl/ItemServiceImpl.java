@@ -38,6 +38,18 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
+    public Optional<ItemResponse> updateById(Long id, ItemRequest itemRequest) {
+        return itemRepository.findById(id)
+                .map(item -> {
+                    item.setName(itemRequest.getName());
+                    item.setBarcode(itemRequest.getBarcode());
+                    return itemRepository.save(item);
+                })
+                .map(this::toDto)
+                .map(this::toResponse);
+    }
+
+    @Override
     public Optional<ItemResponse> findById(Long id) {
         return itemRepository.findById(id)
                 .map(this::toDto)

@@ -11,6 +11,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -39,6 +40,37 @@ class ItemLookupApiTests {
                 .andExpect(jsonPath("$.barcode").value("0001234567890"));
 
         mockMvc.perform(get("/items/item/{id}", savedItem.getId() + 1_000_000))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void updatesItemByIdAndReturnsNotFoundForUnknownId() throws Exception {
+        Item item = new Item();
+        item.setName("Milk X");
+        item.setBarcode("0001234567890");
+        Item savedItem = itemRepository.save(item);
+
+        mockMvc.perform(put("/items/item/{id}", savedItem.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "name": "Milk Y",
+                                  "barcode": "9876543210000"
+                                }
+                                """))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(savedItem.getId()))
+                .andExpect(jsonPath("$.name").value("Milk Y"))
+                .andExpect(jsonPath("$.barcode").value("9876543210000"));
+
+        mockMvc.perform(put("/items/item/{id}", savedItem.getId() + 1_000_000)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "name": "Missing",
+                                  "barcode": null
+                                }
+                                """))
                 .andExpect(status().isNotFound());
     }
 }
