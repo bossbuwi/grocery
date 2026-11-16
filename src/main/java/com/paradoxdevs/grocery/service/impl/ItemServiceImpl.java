@@ -5,17 +5,25 @@ import com.paradoxdevs.grocery.api.response.ItemResponse;
 import com.paradoxdevs.grocery.dto.ItemDto;
 import com.paradoxdevs.grocery.entity.Item;
 import com.paradoxdevs.grocery.repository.ItemRepository;
+import com.paradoxdevs.grocery.repository.ItemStorePriceRepository;
 import com.paradoxdevs.grocery.service.ItemService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ItemServiceImpl implements ItemService {
     private final ItemRepository itemRepository;
+    private final ItemStorePriceRepository itemStorePriceRepository;
 
-    public ItemServiceImpl(ItemRepository itemRepository) {
+    public ItemServiceImpl(
+            ItemRepository itemRepository,
+            ItemStorePriceRepository itemStorePriceRepository
+    ) {
         this.itemRepository = itemRepository;
+        this.itemStorePriceRepository = itemStorePriceRepository;
     }
 
     @Override
@@ -27,6 +35,26 @@ public class ItemServiceImpl implements ItemService {
         Item savedItem = itemRepository.save(item);
         ItemDto itemDto = toDto(savedItem);
         return toResponse(itemDto);
+    }
+
+    @Override
+    public Optional<ItemResponse> findById(Long id) {
+        return itemRepository.findById(id)
+                .map(this::toDto)
+                .map(this::toResponse);
+    }
+
+    @Override
+    @Transactional
+    public boolean deleteById(Long id) {
+        Optional<Item> item = itemRepository.findById(id);
+        if (item.isEmpty()) {
+            return false;
+        }
+
+        itemStorePriceRepository.deleteByItem_Id(id);
+        itemRepository.delete(item.get());
+        return true;
     }
 
     @Override
