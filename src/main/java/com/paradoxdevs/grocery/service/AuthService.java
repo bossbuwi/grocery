@@ -22,7 +22,6 @@ import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 
 @Service
@@ -52,10 +51,6 @@ public class AuthService {
 
     @Transactional
     public CurrentUserResponse register(RegisterRequest request) {
-        if (!isValidRegistration(request)) {
-            throw new InvalidAuthRequestException();
-        }
-
         String username = request.getUsername().strip();
         if (appUserRepository.existsByUsername(username)) {
             throw new DuplicateUsernameException();
@@ -98,15 +93,5 @@ public class AuthService {
                 claims
         )).getTokenValue();
         return new AuthResponse(token, "Bearer", tokenLifetimeSeconds);
-    }
-
-    private boolean isValidRegistration(RegisterRequest request) {
-        return request != null
-                && request.getUsername() != null
-                && request.getUsername().strip().length() >= 3
-                && request.getUsername().strip().length() <= 50
-                && request.getPassword() != null
-                && request.getPassword().length() >= 8
-                && request.getPassword().getBytes(StandardCharsets.UTF_8).length <= 72;
     }
 }

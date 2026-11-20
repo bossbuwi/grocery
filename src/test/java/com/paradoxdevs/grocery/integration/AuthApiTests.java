@@ -75,6 +75,10 @@ class AuthApiTests {
     void registrationRejectsWeakAndOverlongUtf8Passwords() throws Exception {
         register("grocery-user", "short").andExpect(status().isBadRequest());
         register("grocery-user", "é".repeat(37)).andExpect(status().isBadRequest());
+        register("  ", "StrongPassword123").andExpect(status().isBadRequest());
+        register(" ab ", "StrongPassword123").andExpect(status().isBadRequest());
+        register("u".repeat(51), "StrongPassword123").andExpect(status().isBadRequest());
+        register("valid-user", "        ").andExpect(status().isBadRequest());
     }
 
     @Test

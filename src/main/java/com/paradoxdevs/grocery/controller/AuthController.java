@@ -7,6 +7,7 @@ import com.paradoxdevs.grocery.api.response.CurrentUserResponse;
 import com.paradoxdevs.grocery.service.AuthService;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -30,7 +31,7 @@ public class AuthController {
 
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
-    public CurrentUserResponse register(@RequestBody RegisterRequest request) {
+    public CurrentUserResponse register(@Valid @RequestBody RegisterRequest request) {
         return authService.register(request);
     }
 
