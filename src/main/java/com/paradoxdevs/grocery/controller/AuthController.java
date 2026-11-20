@@ -5,9 +5,9 @@ import com.paradoxdevs.grocery.api.request.RegisterRequest;
 import com.paradoxdevs.grocery.api.response.AuthResponse;
 import com.paradoxdevs.grocery.api.response.CurrentUserResponse;
 import com.paradoxdevs.grocery.service.AuthService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
-import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -36,7 +36,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public AuthResponse login(@RequestBody LoginRequest request) {
+    public AuthResponse login(@Valid @RequestBody LoginRequest request) {
         return authService.login(request);
     }
 }

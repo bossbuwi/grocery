@@ -82,6 +82,15 @@ class AuthApiTests {
     }
 
     @Test
+    void loginRejectsBlankOrOversizedFields() throws Exception {
+        login("", "StrongPassword123").andExpect(status().isBadRequest());
+        login(" ab ", "StrongPassword123").andExpect(status().isBadRequest());
+        login("u".repeat(51), "StrongPassword123").andExpect(status().isBadRequest());
+        login("valid-user", "").andExpect(status().isBadRequest());
+        login("valid-user", "é".repeat(37)).andExpect(status().isBadRequest());
+    }
+
+    @Test
     void registrationStoresOnlyAnEncodedPassword() throws Exception {
         register("grocery-user", "StrongPassword123").andExpect(status().isCreated());
 

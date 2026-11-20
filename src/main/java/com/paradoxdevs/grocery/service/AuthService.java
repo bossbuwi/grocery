@@ -6,7 +6,6 @@ import com.paradoxdevs.grocery.api.response.AuthResponse;
 import com.paradoxdevs.grocery.api.response.CurrentUserResponse;
 import com.paradoxdevs.grocery.entity.AppUser;
 import com.paradoxdevs.grocery.error.exception.DuplicateUsernameException;
-import com.paradoxdevs.grocery.error.exception.InvalidAuthRequestException;
 import com.paradoxdevs.grocery.error.exception.InvalidCredentialsException;
 import com.paradoxdevs.grocery.repository.AppUserRepository;
 import org.springframework.beans.factory.annotation.Value;
@@ -63,11 +62,6 @@ public class AuthService {
     }
 
     public AuthResponse login(LoginRequest request) {
-        if (request == null || request.getUsername() == null || request.getUsername().isBlank()
-                || request.getPassword() == null || request.getPassword().isEmpty()) {
-            throw new InvalidAuthRequestException();
-        }
-
         Authentication authentication;
         try {
             authentication = authenticationManager.authenticate(
