@@ -5,8 +5,8 @@ import com.paradoxdevs.grocery.api.request.RegisterRequest;
 import com.paradoxdevs.grocery.api.response.AuthResponse;
 import com.paradoxdevs.grocery.api.response.CurrentUserResponse;
 import com.paradoxdevs.grocery.entity.AppUser;
-import com.paradoxdevs.grocery.error.exception.DuplicateUsernameException;
 import com.paradoxdevs.grocery.error.exception.InvalidCredentialsException;
+import com.paradoxdevs.grocery.error.exception.ResourceAlreadyExistsException;
 import com.paradoxdevs.grocery.repository.AppUserRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -51,9 +51,9 @@ public class AuthService {
     @Transactional
     public CurrentUserResponse register(RegisterRequest request) {
         String username = request.getUsername().strip();
-        if (appUserRepository.existsByUsername(username)) {
-            throw new DuplicateUsernameException();
-        }
+//        if (appUserRepository.existsByUsername(username)) {
+//            throw new ResourceAlreadyExistsException();
+//        }
 
         AppUser appUser = new AppUser();
         appUser.setUsername(username);

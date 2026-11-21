@@ -1,30 +1,24 @@
 package com.paradoxdevs.grocery.error;
 
-import com.paradoxdevs.grocery.error.exception.DuplicateUsernameException;
-import com.paradoxdevs.grocery.error.exception.InvalidCredentialsException;
+import com.paradoxdevs.grocery.api.response.ErrorResponse;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.context.request.WebRequest;
 
 @RestControllerAdvice
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class GlobalExceptionHandler {
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Void> handleInvalidRequest() {
-        return ResponseEntity.badRequest().build();
+    private final ErrorResponseFactory errorResponseFactory;
+
+    public GlobalExceptionHandler(ErrorResponseFactory errorResponseFactory) {
+        this.errorResponseFactory = errorResponseFactory;
     }
 
-    @ExceptionHandler(DuplicateUsernameException.class)
-    public ResponseEntity<Void> handleDuplicateUsername() {
-        return ResponseEntity.status(HttpStatus.CONFLICT).build();
-    }
-
-    @ExceptionHandler(InvalidCredentialsException.class)
-    public ResponseEntity<Void> handleInvalidCredentials() {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponse> handleException(Exception ex, WebRequest request) {
+        return errorResponseFactory.buildResponseEntity(ex, request);
     }
 }

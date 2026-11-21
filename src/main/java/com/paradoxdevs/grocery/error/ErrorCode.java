@@ -6,8 +6,10 @@ import lombok.Getter;
 public enum ErrorCode {
     UNAUTHENTICATED(100, "Please login to access the resource."),
     UNAUTHORIZED(101, "User not authorized to access the resource."),
-    MALFORMED_REQUEST(100, "Malformed JSON request, please check your request and try again."),
-    REQUEST_VALIDATION_ERROR(101, "Request validation error."),
+    MALFORMED_REQUEST(102, "Malformed JSON request, please check your request and try again."),
+    REQUEST_VALIDATION_ERROR(103, "Request validation error."),
+    INVALID_CREDENTIALS(104, "Username or password is incorrect."),
+    RESOURCE_ALREADY_EXISTS(105, "The %s: %s already exists."),
     INTERNAL_SERVER_ERROR(999, "Something went wrong, please contact support."),;
 
     private final int code;

@@ -16,6 +16,10 @@ import java.util.stream.Collectors;
 @Component
 public class ErrorResponseBuilder {
 
+    public ResponseEntity<ErrorResponse> build(WebRequest webRequest) {
+        return this.build(webRequest, ErrorCode.INTERNAL_SERVER_ERROR, null, null, null);
+    }
+
     public ResponseEntity<ErrorResponse> build(WebRequest webRequest,
                                                ErrorCode errorCode,
                                                String customMessage,
@@ -43,7 +47,12 @@ public class ErrorResponseBuilder {
 
     private HttpStatus getStatus(ErrorCode errorCode) {
         return switch (errorCode) {
-            case INTERNAL_SERVER_ERROR -> HttpStatus.INTERNAL_SERVER_ERROR;
+            case UNAUTHENTICATED,
+                 INVALID_CREDENTIALS -> HttpStatus.UNAUTHORIZED;
+            case UNAUTHORIZED -> HttpStatus.FORBIDDEN;
+            case MALFORMED_REQUEST,
+                 REQUEST_VALIDATION_ERROR -> HttpStatus.BAD_REQUEST;
+            case RESOURCE_ALREADY_EXISTS -> HttpStatus.CONFLICT;
             default -> HttpStatus.INTERNAL_SERVER_ERROR;
         };
     }
