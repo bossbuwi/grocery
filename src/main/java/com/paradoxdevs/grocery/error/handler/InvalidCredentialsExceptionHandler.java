@@ -19,12 +19,15 @@ public class InvalidCredentialsExceptionHandler extends BaseExceptionHandler<Inv
 
     @Override
     public ResponseEntity<ErrorResponse> handleException(Exception ex, WebRequest request) {
-        if (ex instanceof InvalidCredentialsException ice) {
-            log.warn(ice.getMessage());
-            return errorResponseBuilder.build(request, ice.getErrorCode(), null, null, null);
-        }
-
-        log.warn("InvalidCredentialsExceptionHandler received an unexpected exception: {}", ex.getClass().getSimpleName());
-        return errorResponseBuilder.build(request);
+        InvalidCredentialsException invalidCredentialsException =
+                (InvalidCredentialsException) ex;
+        log.warn(ex.getMessage());
+        return errorResponseBuilder.build(
+                request,
+                invalidCredentialsException.getErrorCode(),
+                null,
+                null,
+                null
+        );
     }
 }
