@@ -1,7 +1,6 @@
 package com.paradoxdevs.grocery.integration;
 
 import com.paradoxdevs.grocery.entity.Item;
-import com.paradoxdevs.grocery.entity.ItemStorePrice;
 import com.paradoxdevs.grocery.entity.Store;
 import com.paradoxdevs.grocery.error.ErrorCode;
 import com.paradoxdevs.grocery.repository.ItemRepository;
