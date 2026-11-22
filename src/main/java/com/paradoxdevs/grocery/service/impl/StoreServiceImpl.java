@@ -7,12 +7,14 @@ import com.paradoxdevs.grocery.entity.Store;
 import com.paradoxdevs.grocery.repository.ItemStorePriceRepository;
 import com.paradoxdevs.grocery.repository.StoreRepository;
 import com.paradoxdevs.grocery.service.StoreService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @Service
 public class StoreServiceImpl implements StoreService {
     private final StoreRepository storeRepository;
@@ -30,7 +32,9 @@ public class StoreServiceImpl implements StoreService {
     public StoreResponse create(StoreRequest storeRequest) {
         Store store = new Store();
         store.setName(storeRequest.getName());
-        return toResponse(toDto(storeRepository.save(store)));
+        Store savedStore = storeRepository.save(store);
+        log.info("Created store id={}", savedStore.getId());
+        return toResponse(toDto(savedStore));
     }
 
     @Override
@@ -38,7 +42,9 @@ public class StoreServiceImpl implements StoreService {
         return storeRepository.findById(id)
                 .map(store -> {
                     store.setName(storeRequest.getName());
-                    return storeRepository.save(store);
+                    Store updatedStore = storeRepository.save(store);
+                    log.info("Updated store id={}", updatedStore.getId());
+                    return updatedStore;
                 })
                 .map(this::toDto)
                 .map(this::toResponse);
@@ -61,6 +67,7 @@ public class StoreServiceImpl implements StoreService {
 
         itemStorePriceRepository.deleteByStoreId(id);
         storeRepository.delete(store.get());
+        log.info("Deleted store id={}", id);
         return true;
     }
 

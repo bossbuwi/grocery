@@ -7,12 +7,14 @@ import com.paradoxdevs.grocery.entity.Item;
 import com.paradoxdevs.grocery.repository.ItemRepository;
 import com.paradoxdevs.grocery.repository.ItemStorePriceRepository;
 import com.paradoxdevs.grocery.service.ItemService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @Service
 public class ItemServiceImpl implements ItemService {
     private final ItemRepository itemRepository;
@@ -33,6 +35,7 @@ public class ItemServiceImpl implements ItemService {
         item.setBarcode(itemRequest.getBarcode());
 
         Item savedItem = itemRepository.save(item);
+        log.info("Created item id={}", savedItem.getId());
         ItemDto itemDto = toDto(savedItem);
         return toResponse(itemDto);
     }
@@ -43,7 +46,9 @@ public class ItemServiceImpl implements ItemService {
                 .map(item -> {
                     item.setName(itemRequest.getName());
                     item.setBarcode(itemRequest.getBarcode());
-                    return itemRepository.save(item);
+                    Item updatedItem = itemRepository.save(item);
+                    log.info("Updated item id={}", updatedItem.getId());
+                    return updatedItem;
                 })
                 .map(this::toDto)
                 .map(this::toResponse);
@@ -66,6 +71,7 @@ public class ItemServiceImpl implements ItemService {
 
         itemStorePriceRepository.deleteByItemId(id);
         itemRepository.delete(item.get());
+        log.info("Deleted item id={}", id);
         return true;
     }
 

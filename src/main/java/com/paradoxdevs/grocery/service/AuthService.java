@@ -8,6 +8,7 @@ import com.paradoxdevs.grocery.entity.AppUser;
 import com.paradoxdevs.grocery.error.exception.InvalidCredentialsException;
 import com.paradoxdevs.grocery.error.exception.ResourceAlreadyExistsException;
 import com.paradoxdevs.grocery.repository.AppUserRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -23,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 
+@Slf4j
 @Service
 public class AuthService {
     private final AppUserRepository appUserRepository;
@@ -58,7 +60,9 @@ public class AuthService {
         AppUser appUser = new AppUser();
         appUser.setUsername(username);
         appUser.setPasswordHash(passwordEncoder.encode(request.getPassword()));
-        return new CurrentUserResponse(appUserRepository.saveAndFlush(appUser).getUsername());
+        AppUser savedUser = appUserRepository.saveAndFlush(appUser);
+        log.info("Registered user id={}", savedUser.getId());
+        return new CurrentUserResponse(savedUser.getUsername());
     }
 
     public AuthResponse login(LoginRequest request) {
@@ -86,6 +90,7 @@ public class AuthService {
                 org.springframework.security.oauth2.jwt.JwsHeader.with(MacAlgorithm.HS256).build(),
                 claims
         )).getTokenValue();
+        log.info("Login succeeded username={}", authentication.getName());
         return new AuthResponse(token, "Bearer", tokenLifetimeSeconds);
     }
 }
