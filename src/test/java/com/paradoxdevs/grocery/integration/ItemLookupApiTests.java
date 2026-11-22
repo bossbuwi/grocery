@@ -1,6 +1,7 @@
 package com.paradoxdevs.grocery.integration;
 
 import com.paradoxdevs.grocery.entity.Item;
+import com.paradoxdevs.grocery.error.ErrorCode;
 import com.paradoxdevs.grocery.repository.ItemRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +42,14 @@ class ItemLookupApiTests {
 
         mockMvc.perform(get("/items/item/{id}", savedItem.getId() + 1_000_000))
                 .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void returnsBadRequestWhenItemIdHasAnInvalidType() throws Exception {
+        mockMvc.perform(get("/items/item/not-a-number"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value(ErrorCode.REQUEST_VALIDATION_ERROR.getCode()))
+                .andExpect(jsonPath("$.fieldErrors[0]").value("id: must be a valid Long"));
     }
 
     @Test
