@@ -3,6 +3,7 @@ package com.paradoxdevs.grocery.controller;
 import com.paradoxdevs.grocery.api.request.ItemRequest;
 import com.paradoxdevs.grocery.api.response.ItemResponse;
 import com.paradoxdevs.grocery.service.ItemService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -26,7 +27,7 @@ public class ItemController {
     }
 
     @PostMapping("/item")
-    public ResponseEntity<ItemResponse> createItem(@RequestBody ItemRequest itemRequest) {
+    public ResponseEntity<ItemResponse> createItem(@Valid @RequestBody ItemRequest itemRequest) {
         return ResponseEntity.status(HttpStatus.CREATED).body(itemService.create(itemRequest));
     }
 
@@ -45,7 +46,7 @@ public class ItemController {
     @PutMapping("/item/{id}")
     public ResponseEntity<ItemResponse> updateItem(
             @PathVariable Long id,
-            @RequestBody ItemRequest itemRequest
+            @Valid @RequestBody ItemRequest itemRequest
     ) {
         return itemService.updateById(id, itemRequest)
                 .map(ResponseEntity::ok)

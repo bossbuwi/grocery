@@ -42,4 +42,27 @@ class ItemApiTests {
                 .andExpect(jsonPath("$[0].name").value("Milk X"))
                 .andExpect(jsonPath("$[0].barcode").value("0001234567890"));
     }
+
+    @Test
+    void validatesItemNameAndOptionalBarcode() throws Exception {
+        mockMvc.perform(post("/items/item")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "name": "Unbarcoded item"
+                                }
+                                """))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.barcode").doesNotExist());
+
+        mockMvc.perform(post("/items/item")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "name": " Item with whitespace",
+                                  "barcode": "1234567X"
+                                }
+                                """))
+                .andExpect(status().isBadRequest());
+    }
 }
