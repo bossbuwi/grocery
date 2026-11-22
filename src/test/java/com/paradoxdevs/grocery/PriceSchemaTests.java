@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
 @Transactional
-class ItemStorePriceSchemaTests {
+class PriceSchemaTests {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
@@ -49,6 +49,18 @@ class ItemStorePriceSchemaTests {
                 "SELECT COUNT(*) FROM items WHERE barcode IS NULL", Integer.class));
         assertThrows(DataIntegrityViolationException.class, () ->
                 insertGrocery("Duplicate Barcode Item", "0009876543210"));
+    }
+
+    @Test
+    void databasePreventsDeletingStoreWithPrices() {
+        long itemId = insertGrocery("Milk X", "0001234567890");
+        long storeId = insertStore("Grocery A");
+        jdbcTemplate.update(
+                "INSERT INTO item_store_prices (item_id, store_id, price) VALUES (?, ?, ?)",
+                itemId, storeId, new BigDecimal("1.00"));
+
+        assertThrows(DataIntegrityViolationException.class, () ->
+                jdbcTemplate.update("DELETE FROM stores WHERE id = ?", storeId));
     }
 
     private long insertGrocery(String name, String barcode) {

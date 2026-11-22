@@ -4,7 +4,8 @@ import com.paradoxdevs.grocery.api.request.StoreRequest;
 import com.paradoxdevs.grocery.api.response.StoreResponse;
 import com.paradoxdevs.grocery.dto.StoreDto;
 import com.paradoxdevs.grocery.entity.Store;
-import com.paradoxdevs.grocery.repository.ItemStorePriceRepository;
+import com.paradoxdevs.grocery.error.exception.ResourceHasChildrenException;
+import com.paradoxdevs.grocery.repository.PriceRepository;
 import com.paradoxdevs.grocery.repository.StoreRepository;
 import com.paradoxdevs.grocery.service.StoreService;
 import lombok.extern.slf4j.Slf4j;
@@ -18,14 +19,14 @@ import java.util.Optional;
 @Service
 public class StoreServiceImpl implements StoreService {
     private final StoreRepository storeRepository;
-    private final ItemStorePriceRepository itemStorePriceRepository;
+    private final PriceRepository priceRepository;
 
     public StoreServiceImpl(
             StoreRepository storeRepository,
-            ItemStorePriceRepository itemStorePriceRepository
+            PriceRepository priceRepository
     ) {
         this.storeRepository = storeRepository;
-        this.itemStorePriceRepository = itemStorePriceRepository;
+        this.priceRepository = priceRepository;
     }
 
     @Override
@@ -65,7 +66,11 @@ public class StoreServiceImpl implements StoreService {
             return false;
         }
 
-        itemStorePriceRepository.deleteByStoreId(id);
+        long priceCount = priceRepository.countByStoreId(id);
+        if (priceCount > 0) {
+            throw new ResourceHasChildrenException(priceCount, "Price");
+        }
+
         storeRepository.delete(store.get());
         log.info("Deleted store id={}", id);
         return true;

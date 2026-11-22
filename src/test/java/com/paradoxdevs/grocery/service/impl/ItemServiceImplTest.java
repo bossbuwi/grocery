@@ -4,7 +4,7 @@ import com.paradoxdevs.grocery.api.request.ItemRequest;
 import com.paradoxdevs.grocery.api.response.ItemResponse;
 import com.paradoxdevs.grocery.entity.Item;
 import com.paradoxdevs.grocery.repository.ItemRepository;
-import com.paradoxdevs.grocery.repository.ItemStorePriceRepository;
+import com.paradoxdevs.grocery.repository.PriceRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -33,7 +33,7 @@ class ItemServiceImplTest {
     private ItemRepository itemRepository;
 
     @Mock
-    private ItemStorePriceRepository itemStorePriceRepository;
+    private PriceRepository priceRepository;
 
     @InjectMocks
     private ItemServiceImpl itemService;
@@ -138,9 +138,9 @@ class ItemServiceImplTest {
 
         assertTrue(itemService.deleteById(42L));
 
-        InOrder deletionOrder = inOrder(itemRepository, itemStorePriceRepository);
+        InOrder deletionOrder = inOrder(itemRepository, priceRepository);
         deletionOrder.verify(itemRepository).findById(42L);
-        deletionOrder.verify(itemStorePriceRepository).deleteByItemId(42L);
+        deletionOrder.verify(priceRepository).deleteByItemId(42L);
         deletionOrder.verify(itemRepository).delete(item);
     }
 
@@ -151,7 +151,7 @@ class ItemServiceImplTest {
         assertFalse(itemService.deleteById(404L));
 
         verify(itemRepository).findById(404L);
-        verifyNoInteractions(itemStorePriceRepository);
+        verifyNoInteractions(priceRepository);
     }
 
     private Item item(Long id, String name, String barcode) {

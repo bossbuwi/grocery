@@ -5,7 +5,7 @@ import com.paradoxdevs.grocery.api.response.ItemResponse;
 import com.paradoxdevs.grocery.dto.ItemDto;
 import com.paradoxdevs.grocery.entity.Item;
 import com.paradoxdevs.grocery.repository.ItemRepository;
-import com.paradoxdevs.grocery.repository.ItemStorePriceRepository;
+import com.paradoxdevs.grocery.repository.PriceRepository;
 import com.paradoxdevs.grocery.service.ItemService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -18,14 +18,14 @@ import java.util.Optional;
 @Service
 public class ItemServiceImpl implements ItemService {
     private final ItemRepository itemRepository;
-    private final ItemStorePriceRepository itemStorePriceRepository;
+    private final PriceRepository priceRepository;
 
     public ItemServiceImpl(
             ItemRepository itemRepository,
-            ItemStorePriceRepository itemStorePriceRepository
+            PriceRepository priceRepository
     ) {
         this.itemRepository = itemRepository;
-        this.itemStorePriceRepository = itemStorePriceRepository;
+        this.priceRepository = priceRepository;
     }
 
     @Override
@@ -69,7 +69,7 @@ public class ItemServiceImpl implements ItemService {
             return false;
         }
 
-        itemStorePriceRepository.deleteByItemId(id);
+        priceRepository.deleteByItemId(id);
         itemRepository.delete(item.get());
         log.info("Deleted item id={}", id);
         return true;

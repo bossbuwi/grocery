@@ -53,7 +53,8 @@ public class ErrorResponseBuilder {
             case MALFORMED_REQUEST,
                  REQUEST_VALIDATION_ERROR -> HttpStatus.BAD_REQUEST;
             case RESOURCE_NOT_FOUND -> HttpStatus.NOT_FOUND;
-            case RESOURCE_ALREADY_EXISTS -> HttpStatus.CONFLICT;
+            case RESOURCE_ALREADY_EXISTS,
+                 RESOURCE_HAS_CHILDREN -> HttpStatus.CONFLICT;
             default -> HttpStatus.INTERNAL_SERVER_ERROR;
         };
     }

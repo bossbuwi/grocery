@@ -1,14 +1,14 @@
 package com.paradoxdevs.grocery.repository;
 
-import com.paradoxdevs.grocery.entity.ItemStorePrice;
+import com.paradoxdevs.grocery.entity.Price;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface ItemStorePriceRepository extends JpaRepository<ItemStorePrice, Long> {
+public interface PriceRepository extends JpaRepository<Price, Long> {
     boolean existsByItemIdAndStoreId(Long itemId, Long storeId);
 
     boolean existsByItemIdAndStoreIdAndIdNot(Long itemId, Long storeId, Long id);
 
-    void deleteByItemId(Long itemId);
+    long countByStoreId(Long storeId);
 
-    void deleteByStoreId(Long storeId);
+    void deleteByItemId(Long itemId);
 }

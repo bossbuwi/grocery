@@ -4,11 +4,11 @@ import com.paradoxdevs.grocery.api.request.PriceRequest;
 import com.paradoxdevs.grocery.api.response.PriceResponse;
 import com.paradoxdevs.grocery.dto.PriceDto;
 import com.paradoxdevs.grocery.entity.Item;
-import com.paradoxdevs.grocery.entity.ItemStorePrice;
+import com.paradoxdevs.grocery.entity.Price;
 import com.paradoxdevs.grocery.entity.Store;
 import com.paradoxdevs.grocery.error.exception.ResourceAlreadyExistsException;
 import com.paradoxdevs.grocery.repository.ItemRepository;
-import com.paradoxdevs.grocery.repository.ItemStorePriceRepository;
+import com.paradoxdevs.grocery.repository.PriceRepository;
 import com.paradoxdevs.grocery.repository.StoreRepository;
 import com.paradoxdevs.grocery.service.PriceService;
 import lombok.extern.slf4j.Slf4j;
@@ -21,16 +21,16 @@ import java.util.Optional;
 @Slf4j
 @Service
 public class PriceServiceImpl implements PriceService {
-    private final ItemStorePriceRepository itemStorePriceRepository;
+    private final PriceRepository priceRepository;
     private final ItemRepository itemRepository;
     private final StoreRepository storeRepository;
 
     public PriceServiceImpl(
-            ItemStorePriceRepository itemStorePriceRepository,
+            PriceRepository priceRepository,
             ItemRepository itemRepository,
             StoreRepository storeRepository
     ) {
-        this.itemStorePriceRepository = itemStorePriceRepository;
+        this.priceRepository = priceRepository;
         this.itemRepository = itemRepository;
         this.storeRepository = storeRepository;
     }
@@ -43,16 +43,16 @@ public class PriceServiceImpl implements PriceService {
         if (item.isEmpty() || store.isEmpty()) {
             return Optional.empty();
         }
-        if (itemStorePriceRepository.existsByItemIdAndStoreId(request.getItemId(), request.getStoreId())) {
+        if (priceRepository.existsByItemIdAndStoreId(request.getItemId(), request.getStoreId())) {
             throw duplicatePrice(request);
         }
 
-        ItemStorePrice itemStorePrice = new ItemStorePrice();
-        itemStorePrice.setItem(item.get());
-        itemStorePrice.setStore(store.get());
-        itemStorePrice.setPrice(request.getPrice());
+        Price price = new Price();
+        price.setItem(item.get());
+        price.setStore(store.get());
+        price.setPrice(request.getPrice());
 
-        ItemStorePrice savedPrice = itemStorePriceRepository.save(itemStorePrice);
+        Price savedPrice = priceRepository.save(price);
         log.info("Created price id={} itemId={} storeId={}",
                 savedPrice.getId(), request.getItemId(), request.getStoreId());
         return Optional.of(toResponse(toDto(savedPrice)));
@@ -61,23 +61,23 @@ public class PriceServiceImpl implements PriceService {
     @Override
     @Transactional
     public Optional<PriceResponse> updateById(Long id, PriceRequest request) {
-        Optional<ItemStorePrice> existingPrice = itemStorePriceRepository.findById(id);
+        Optional<Price> existingPrice = priceRepository.findById(id);
         Optional<Item> item = itemRepository.findById(request.getItemId());
         Optional<Store> store = storeRepository.findById(request.getStoreId());
         if (existingPrice.isEmpty() || item.isEmpty() || store.isEmpty()) {
             return Optional.empty();
         }
-        if (itemStorePriceRepository.existsByItemIdAndStoreIdAndIdNot(
+        if (priceRepository.existsByItemIdAndStoreIdAndIdNot(
                 request.getItemId(), request.getStoreId(), id
         )) {
             throw duplicatePrice(request);
         }
 
-        ItemStorePrice price = existingPrice.get();
+        Price price = existingPrice.get();
         price.setItem(item.get());
         price.setStore(store.get());
         price.setPrice(request.getPrice());
-        ItemStorePrice savedPrice = itemStorePriceRepository.save(price);
+        Price savedPrice = priceRepository.save(price);
         log.info("Updated price id={} itemId={} storeId={}",
                 savedPrice.getId(), request.getItemId(), request.getStoreId());
         return Optional.of(toResponse(toDto(savedPrice)));
@@ -86,7 +86,7 @@ public class PriceServiceImpl implements PriceService {
     @Override
     @Transactional(readOnly = true)
     public Optional<PriceResponse> findById(Long id) {
-        return itemStorePriceRepository.findById(id)
+        return priceRepository.findById(id)
                 .map(this::toDto)
                 .map(this::toResponse);
     }
@@ -94,12 +94,12 @@ public class PriceServiceImpl implements PriceService {
     @Override
     @Transactional
     public boolean deleteById(Long id) {
-        Optional<ItemStorePrice> price = itemStorePriceRepository.findById(id);
+        Optional<Price> price = priceRepository.findById(id);
         if (price.isEmpty()) {
             return false;
         }
 
-        itemStorePriceRepository.delete(price.get());
+        priceRepository.delete(price.get());
         log.info("Deleted price id={}", id);
         return true;
     }
@@ -107,7 +107,7 @@ public class PriceServiceImpl implements PriceService {
     @Override
     @Transactional(readOnly = true)
     public List<PriceResponse> findAll() {
-        return itemStorePriceRepository.findAll()
+        return priceRepository.findAll()
                 .stream()
                 .map(this::toDto)
                 .map(this::toResponse)
@@ -121,12 +121,12 @@ public class PriceServiceImpl implements PriceService {
         );
     }
 
-    private PriceDto toDto(ItemStorePrice itemStorePrice) {
+    private PriceDto toDto(Price price) {
         PriceDto dto = new PriceDto();
-        dto.setId(itemStorePrice.getId());
-        dto.setItemId(itemStorePrice.getItem().getId());
-        dto.setStoreId(itemStorePrice.getStore().getId());
-        dto.setPrice(itemStorePrice.getPrice());
+        dto.setId(price.getId());
+        dto.setItemId(price.getItem().getId());
+        dto.setStoreId(price.getStore().getId());
+        dto.setPrice(price.getPrice());
         return dto;
     }
 

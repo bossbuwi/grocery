@@ -1,10 +1,10 @@
 package com.paradoxdevs.grocery.integration;
 
 import com.paradoxdevs.grocery.entity.Item;
-import com.paradoxdevs.grocery.entity.ItemStorePrice;
+import com.paradoxdevs.grocery.entity.Price;
 import com.paradoxdevs.grocery.entity.Store;
 import com.paradoxdevs.grocery.repository.ItemRepository;
-import com.paradoxdevs.grocery.repository.ItemStorePriceRepository;
+import com.paradoxdevs.grocery.repository.PriceRepository;
 import com.paradoxdevs.grocery.repository.StoreRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +31,7 @@ class ItemDeletionApiTests {
     private ItemRepository itemRepository;
 
     @Autowired
-    private ItemStorePriceRepository itemStorePriceRepository;
+    private PriceRepository priceRepository;
 
     @Autowired
     private StoreRepository storeRepository;
@@ -47,17 +47,17 @@ class ItemDeletionApiTests {
         store.setName("Market");
         Store savedStore = storeRepository.save(store);
 
-        ItemStorePrice itemStorePrice = new ItemStorePrice();
-        itemStorePrice.setItem(savedItem);
-        itemStorePrice.setStore(savedStore);
-        itemStorePrice.setPrice(new BigDecimal("3.49"));
-        itemStorePriceRepository.save(itemStorePrice);
+        Price price = new Price();
+        price.setItem(savedItem);
+        price.setStore(savedStore);
+        price.setPrice(new BigDecimal("3.49"));
+        priceRepository.save(price);
 
         mockMvc.perform(delete("/items/item/{id}", savedItem.getId()))
                 .andExpect(status().isNoContent());
 
         assertFalse(itemRepository.existsById(savedItem.getId()));
-        assertTrue(itemStorePriceRepository.findAll().isEmpty());
+        assertTrue(priceRepository.findAll().isEmpty());
     }
 
     @Test

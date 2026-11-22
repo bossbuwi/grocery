@@ -4,7 +4,7 @@ import com.paradoxdevs.grocery.entity.Item;
 import com.paradoxdevs.grocery.entity.Store;
 import com.paradoxdevs.grocery.error.ErrorCode;
 import com.paradoxdevs.grocery.repository.ItemRepository;
-import com.paradoxdevs.grocery.repository.ItemStorePriceRepository;
+import com.paradoxdevs.grocery.repository.PriceRepository;
 import com.paradoxdevs.grocery.repository.StoreRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +37,7 @@ class PriceApiTests {
     private StoreRepository storeRepository;
 
     @Autowired
-    private ItemStorePriceRepository itemStorePriceRepository;
+    private PriceRepository priceRepository;
 
     @Test
     void createsListsFetchesUpdatesAndDeletesPrice() throws Exception {
@@ -55,7 +55,7 @@ class PriceApiTests {
                 .andExpect(jsonPath("$.itemId").value(firstItem.getId()))
                 .andExpect(jsonPath("$.storeId").value(firstStore.getId()))
                 .andExpect(jsonPath("$.price").value(3.49));
-        long priceId = itemStorePriceRepository.findAll().getFirst().getId();
+        long priceId = priceRepository.findAll().getFirst().getId();
 
         mockMvc.perform(get("/prices/"))
                 .andExpect(status().isOk())
@@ -76,7 +76,7 @@ class PriceApiTests {
 
         mockMvc.perform(delete("/prices/price/{id}", priceId))
                 .andExpect(status().isNoContent());
-        assertFalse(itemStorePriceRepository.existsById(priceId));
+        assertFalse(priceRepository.existsById(priceId));
     }
 
     @Test

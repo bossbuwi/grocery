@@ -1,11 +1,11 @@
 package com.paradoxdevs.grocery.integration;
 
 import com.paradoxdevs.grocery.entity.Item;
-import com.paradoxdevs.grocery.entity.ItemStorePrice;
+import com.paradoxdevs.grocery.entity.Price;
 import com.paradoxdevs.grocery.entity.Store;
 import com.paradoxdevs.grocery.error.ErrorCode;
 import com.paradoxdevs.grocery.repository.ItemRepository;
-import com.paradoxdevs.grocery.repository.ItemStorePriceRepository;
+import com.paradoxdevs.grocery.repository.PriceRepository;
 import com.paradoxdevs.grocery.repository.StoreRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,7 +41,7 @@ class StoreApiTests {
     private ItemRepository itemRepository;
 
     @Autowired
-    private ItemStorePriceRepository itemStorePriceRepository;
+    private PriceRepository priceRepository;
 
     @Test
     void createsStoreAndReturnsItInTheStoreList() throws Exception {
@@ -63,7 +63,7 @@ class StoreApiTests {
     }
 
     @Test
-    void getsUpdatesAndDeletesStoreAndItsItemPrices() throws Exception {
+    void preventsDeletingStoreWhileItHasItemPrices() throws Exception {
         Store store = new Store();
         store.setName("Market");
         Store savedStore = storeRepository.save(store);
@@ -72,11 +72,11 @@ class StoreApiTests {
         item.setName("Milk");
         Item savedItem = itemRepository.save(item);
 
-        ItemStorePrice price = new ItemStorePrice();
+        Price price = new Price();
         price.setStore(savedStore);
         price.setItem(savedItem);
         price.setPrice(new BigDecimal("3.49"));
-        itemStorePriceRepository.save(price);
+        priceRepository.save(price);
 
         mockMvc.perform(get("/stores/store/{id}", savedStore.getId()))
                 .andExpect(status().isOk())
@@ -93,10 +93,12 @@ class StoreApiTests {
                 .andExpect(jsonPath("$.name").value("Updated Market"));
 
         mockMvc.perform(delete("/stores/store/{id}", savedStore.getId()))
-                .andExpect(status().isNoContent());
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.code").value(ErrorCode.RESOURCE_HAS_CHILDREN.getCode()))
+                .andExpect(jsonPath("$.message").value("The requested resource has 1 Price."));
 
-        assertFalse(storeRepository.existsById(savedStore.getId()));
-        assertTrue(itemStorePriceRepository.findAll().isEmpty());
+        assertTrue(storeRepository.existsById(savedStore.getId()));
+        assertTrue(priceRepository.existsById(price.getId()));
     }
 
     @Test
@@ -128,5 +130,17 @@ class StoreApiTests {
                                 """))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.code").value(ErrorCode.MALFORMED_REQUEST.getCode()));
+    }
+
+    @Test
+    void deletesStoreWhenItHasNoPrices() throws Exception {
+        Store store = new Store();
+        store.setName("Market");
+        Store savedStore = storeRepository.save(store);
+
+        mockMvc.perform(delete("/stores/store/{id}", savedStore.getId()))
+                .andExpect(status().isNoContent());
+
+        assertFalse(storeRepository.existsById(savedStore.getId()));
     }
 }
