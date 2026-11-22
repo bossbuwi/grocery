@@ -5,12 +5,10 @@ import com.paradoxdevs.grocery.api.request.RegisterRequest;
 import com.paradoxdevs.grocery.api.response.AuthResponse;
 import com.paradoxdevs.grocery.api.response.CurrentUserResponse;
 import com.paradoxdevs.grocery.entity.AppUser;
-import com.paradoxdevs.grocery.utils.UniqueConstraintViolationTranslator;
 import com.paradoxdevs.grocery.error.exception.InvalidCredentialsException;
 import com.paradoxdevs.grocery.error.exception.ResourceAlreadyExistsException;
 import com.paradoxdevs.grocery.repository.AppUserRepository;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -31,7 +29,6 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtEncoder jwtEncoder;
-    private final UniqueConstraintViolationTranslator uniqueConstraintViolationTranslator;
     private final long tokenLifetimeSeconds;
 
     public AuthService(
@@ -39,7 +36,6 @@ public class AuthService {
             PasswordEncoder passwordEncoder,
             AuthenticationManager authenticationManager,
             JwtEncoder jwtEncoder,
-            UniqueConstraintViolationTranslator uniqueConstraintViolationTranslator,
             @Value("${security.jwt.expiration-seconds}") long tokenLifetimeSeconds
     ) {
         if (tokenLifetimeSeconds <= 0) {
@@ -49,7 +45,6 @@ public class AuthService {
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
         this.jwtEncoder = jwtEncoder;
-        this.uniqueConstraintViolationTranslator = uniqueConstraintViolationTranslator;
         this.tokenLifetimeSeconds = tokenLifetimeSeconds;
     }
 
@@ -63,11 +58,7 @@ public class AuthService {
         AppUser appUser = new AppUser();
         appUser.setUsername(username);
         appUser.setPasswordHash(passwordEncoder.encode(request.getPassword()));
-        try {
-            return new CurrentUserResponse(appUserRepository.saveAndFlush(appUser).getUsername());
-        } catch (DataIntegrityViolationException exception) {
-            throw uniqueConstraintViolationTranslator.translate(exception).orElseThrow(() -> exception);
-        }
+        return new CurrentUserResponse(appUserRepository.saveAndFlush(appUser).getUsername());
     }
 
     public AuthResponse login(LoginRequest request) {
