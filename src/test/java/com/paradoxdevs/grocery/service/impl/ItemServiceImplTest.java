@@ -140,7 +140,7 @@ class ItemServiceImplTest {
 
         InOrder deletionOrder = inOrder(itemRepository, itemStorePriceRepository);
         deletionOrder.verify(itemRepository).findById(42L);
-        deletionOrder.verify(itemStorePriceRepository).deleteByItem_Id(42L);
+        deletionOrder.verify(itemStorePriceRepository).deleteByItemId(42L);
         deletionOrder.verify(itemRepository).delete(item);
     }
 

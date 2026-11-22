@@ -64,7 +64,7 @@ public class ItemServiceImpl implements ItemService {
             return false;
         }
 
-        itemStorePriceRepository.deleteByItem_Id(id);
+        itemStorePriceRepository.deleteByItemId(id);
         itemRepository.delete(item.get());
         return true;
     }
