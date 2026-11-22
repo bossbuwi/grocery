@@ -11,8 +11,7 @@ import org.springframework.web.context.request.WebRequest;
 
 @Slf4j
 @Component
-public class ResourceAlreadyExistsExceptionHandler
-        extends BaseExceptionHandler<ResourceAlreadyExistsException> {
+public class ResourceAlreadyExistsExceptionHandler extends BaseExceptionHandler<ResourceAlreadyExistsException> {
 
     public ResourceAlreadyExistsExceptionHandler(ErrorResponseBuilder errorResponseBuilder) {
         super(errorResponseBuilder);
