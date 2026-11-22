@@ -10,6 +10,7 @@ public enum ErrorCode {
     REQUEST_VALIDATION_ERROR(103, "Request validation error."),
     INVALID_CREDENTIALS(104, "Username or password is incorrect."),
     RESOURCE_ALREADY_EXISTS(105, "The %s: %s already exists."),
+    RESOURCE_NOT_FOUND(106, "The requested resource was not found."),
     INTERNAL_SERVER_ERROR(999, "Something went wrong, please contact support."),;
 
     private final int code;

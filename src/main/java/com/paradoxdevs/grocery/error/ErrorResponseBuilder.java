@@ -52,6 +52,7 @@ public class ErrorResponseBuilder {
             case UNAUTHORIZED -> HttpStatus.FORBIDDEN;
             case MALFORMED_REQUEST,
                  REQUEST_VALIDATION_ERROR -> HttpStatus.BAD_REQUEST;
+            case RESOURCE_NOT_FOUND -> HttpStatus.NOT_FOUND;
             case RESOURCE_ALREADY_EXISTS -> HttpStatus.CONFLICT;
             default -> HttpStatus.INTERNAL_SERVER_ERROR;
         };
