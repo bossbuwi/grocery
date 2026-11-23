@@ -54,12 +54,41 @@ class StoreApiTests {
                                 """))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").isNumber())
-                .andExpect(jsonPath("$.name").value("Market"));
+                .andExpect(jsonPath("$.name").value("Market"))
+                .andExpect(jsonPath("$.items").doesNotExist());
 
         mockMvc.perform(get("/stores/"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(1)))
-                .andExpect(jsonPath("$[0].name").value("Market"));
+                .andExpect(jsonPath("$[0].name").value("Market"))
+                .andExpect(jsonPath("$[0].items", hasSize(0)));
+    }
+
+    @Test
+    void includesPricedItemsWhenListingStores() throws Exception {
+        Store store = new Store();
+        store.setName("Market");
+        Store savedStore = storeRepository.save(store);
+
+        Item milk = new Item();
+        milk.setName("Milk");
+        milk.setBarcode("0001234567890");
+        Item savedMilk = itemRepository.save(milk);
+
+        Price price = new Price();
+        price.setStore(savedStore);
+        price.setItem(savedMilk);
+        price.setPrice(new BigDecimal("3.49"));
+        priceRepository.save(price);
+
+        mockMvc.perform(get("/stores/"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(1)))
+                .andExpect(jsonPath("$[0].items", hasSize(1)))
+                .andExpect(jsonPath("$[0].items[0].id").value(savedMilk.getId()))
+                .andExpect(jsonPath("$[0].items[0].name").value("Milk"))
+                .andExpect(jsonPath("$[0].items[0].barcode").value("0001234567890"))
+                .andExpect(jsonPath("$[0].items[0].price").value(3.49));
     }
 
     @Test
@@ -80,7 +109,11 @@ class StoreApiTests {
 
         mockMvc.perform(get("/stores/store/{id}", savedStore.getId()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name").value("Market"));
+                .andExpect(jsonPath("$.name").value("Market"))
+                .andExpect(jsonPath("$.items", hasSize(1)))
+                .andExpect(jsonPath("$.items[0].id").value(savedItem.getId()))
+                .andExpect(jsonPath("$.items[0].name").value("Milk"))
+                .andExpect(jsonPath("$.items[0].price").value(3.49));
 
         mockMvc.perform(put("/stores/store/{id}", savedStore.getId())
                         .contentType(MediaType.APPLICATION_JSON)
@@ -90,7 +123,8 @@ class StoreApiTests {
                                 }
                                 """))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name").value("Updated Market"));
+                .andExpect(jsonPath("$.name").value("Updated Market"))
+                .andExpect(jsonPath("$.items").doesNotExist());
 
         mockMvc.perform(delete("/stores/store/{id}", savedStore.getId()))
                 .andExpect(status().isConflict())

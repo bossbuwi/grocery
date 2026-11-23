@@ -11,7 +11,7 @@ public enum ErrorCode {
     INVALID_CREDENTIALS(104, "Username or password is incorrect."),
     RESOURCE_ALREADY_EXISTS(105, "The %s: %s already exists."),
     RESOURCE_NOT_FOUND(106, "The requested resource was not found."),
-    RESOURCE_HAS_CHILDREN(107, "The requested resource still owns %s %s."),
+    RESOURCE_HAS_CHILDREN(107, "The requested resource has %s %s."),
     INTERNAL_SERVER_ERROR(999, "Something went wrong, please contact support."),;
 
     private final int code;
