@@ -17,5 +17,8 @@ public interface PriceRepository extends JpaRepository<Price, Long> {
     @EntityGraph(attributePaths = "item")
     List<Price> findAllByStoreIdIn(Collection<Long> storeIds);
 
+    @EntityGraph(attributePaths = "store")
+    List<Price> findAllByItemIdIn(Collection<Long> itemIds);
+
     void deleteByItemId(Long itemId);
 }

@@ -1,6 +1,7 @@
 package com.paradoxdevs.grocery.controller;
 
 import com.paradoxdevs.grocery.api.request.ItemRequest;
+import com.paradoxdevs.grocery.api.response.ItemReadResponse;
 import com.paradoxdevs.grocery.api.response.ItemResponse;
 import com.paradoxdevs.grocery.service.ItemService;
 import jakarta.validation.Valid;
@@ -32,12 +33,12 @@ public class ItemController {
     }
 
     @GetMapping({"", "/"})
-    public ResponseEntity<List<ItemResponse>> findAllItems() {
+    public ResponseEntity<List<ItemReadResponse>> findAllItems() {
         return ResponseEntity.ok(itemService.findAll());
     }
 
     @GetMapping("/item/{id}")
-    public ResponseEntity<ItemResponse> findItemById(@PathVariable Long id) {
+    public ResponseEntity<ItemReadResponse> findItemById(@PathVariable Long id) {
         return itemService.findById(id)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());

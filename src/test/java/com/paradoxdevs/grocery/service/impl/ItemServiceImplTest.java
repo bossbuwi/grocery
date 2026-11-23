@@ -1,6 +1,7 @@
 package com.paradoxdevs.grocery.service.impl;
 
 import com.paradoxdevs.grocery.api.request.ItemRequest;
+import com.paradoxdevs.grocery.api.response.ItemReadResponse;
 import com.paradoxdevs.grocery.api.response.ItemResponse;
 import com.paradoxdevs.grocery.entity.Item;
 import com.paradoxdevs.grocery.repository.ItemRepository;
@@ -67,7 +68,7 @@ class ItemServiceImplTest {
         Item cereal = item(2L, "Cereal Y", null);
         when(itemRepository.findAll()).thenReturn(List.of(milk, cereal));
 
-        List<ItemResponse> responses = itemService.findAll();
+        List<ItemReadResponse> responses = itemService.findAll();
 
         assertEquals(2, responses.size());
         assertEquals(1L, responses.getFirst().getId());
@@ -76,6 +77,8 @@ class ItemServiceImplTest {
         assertEquals(2L, responses.get(1).getId());
         assertEquals("Cereal Y", responses.get(1).getName());
         assertNull(responses.get(1).getBarcode());
+        assertTrue(responses.getFirst().getStores().isEmpty());
+        assertTrue(responses.get(1).getStores().isEmpty());
         verify(itemRepository).findAll();
     }
 
@@ -84,11 +87,12 @@ class ItemServiceImplTest {
         when(itemRepository.findById(42L))
                 .thenReturn(Optional.of(item(42L, "Milk X", "0001234567890")));
 
-        ItemResponse response = itemService.findById(42L).orElseThrow();
+        ItemReadResponse response = itemService.findById(42L).orElseThrow();
 
         assertEquals(42L, response.getId());
         assertEquals("Milk X", response.getName());
         assertEquals("0001234567890", response.getBarcode());
+        assertTrue(response.getStores().isEmpty());
         verify(itemRepository).findById(42L);
     }
 

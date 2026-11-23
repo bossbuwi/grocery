@@ -1,6 +1,7 @@
 package com.paradoxdevs.grocery.service;
 
 import com.paradoxdevs.grocery.api.request.ItemRequest;
+import com.paradoxdevs.grocery.api.response.ItemReadResponse;
 import com.paradoxdevs.grocery.api.response.ItemResponse;
 
 import java.util.List;
@@ -11,9 +12,9 @@ public interface ItemService {
 
     Optional<ItemResponse> updateById(Long id, ItemRequest itemRequest);
 
-    Optional<ItemResponse> findById(Long id);
+    Optional<ItemReadResponse> findById(Long id);
 
     boolean deleteById(Long id);
 
-    List<ItemResponse> findAll();
+    List<ItemReadResponse> findAll();
 }

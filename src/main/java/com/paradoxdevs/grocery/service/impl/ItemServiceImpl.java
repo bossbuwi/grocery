@@ -1,9 +1,12 @@
 package com.paradoxdevs.grocery.service.impl;
 
 import com.paradoxdevs.grocery.api.request.ItemRequest;
+import com.paradoxdevs.grocery.api.response.ItemReadResponse;
+import com.paradoxdevs.grocery.api.response.ItemStoreResponse;
 import com.paradoxdevs.grocery.api.response.ItemResponse;
 import com.paradoxdevs.grocery.dto.ItemDto;
 import com.paradoxdevs.grocery.entity.Item;
+import com.paradoxdevs.grocery.entity.Price;
 import com.paradoxdevs.grocery.repository.ItemRepository;
 import com.paradoxdevs.grocery.repository.PriceRepository;
 import com.paradoxdevs.grocery.service.ItemService;
@@ -12,7 +15,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -55,10 +60,9 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public Optional<ItemResponse> findById(Long id) {
+    public Optional<ItemReadResponse> findById(Long id) {
         return itemRepository.findById(id)
-                .map(this::toDto)
-                .map(this::toResponse);
+                .map(item -> toReadResponses(List.of(item)).getFirst());
     }
 
     @Override
@@ -76,15 +80,8 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemResponse> findAll() {
-        List<ItemDto> itemDtos = itemRepository.findAll()
-                .stream()
-                .map(this::toDto)
-                .toList();
-
-        return itemDtos.stream()
-                .map(this::toResponse)
-                .toList();
+    public List<ItemReadResponse> findAll() {
+        return toReadResponses(itemRepository.findAll());
     }
 
     private ItemDto toDto(Item item) {
@@ -101,5 +98,41 @@ public class ItemServiceImpl implements ItemService {
         itemResponse.setName(itemDto.getName());
         itemResponse.setBarcode(itemDto.getBarcode());
         return itemResponse;
+    }
+
+    private List<ItemReadResponse> toReadResponses(List<Item> items) {
+        if (items.isEmpty()) {
+            return List.of();
+        }
+
+        List<Long> itemIds = items.stream()
+                .map(Item::getId)
+                .toList();
+        Map<Long, List<ItemStoreResponse>> storesByItemId = priceRepository
+                .findAllByItemIdIn(itemIds)
+                .stream()
+                .collect(Collectors.groupingBy(
+                        price -> price.getItem().getId(),
+                        Collectors.mapping(this::toItemStoreResponse, Collectors.toList())
+                ));
+
+        return items.stream()
+                .map(item -> {
+                    ItemReadResponse response = new ItemReadResponse();
+                    response.setId(item.getId());
+                    response.setName(item.getName());
+                    response.setBarcode(item.getBarcode());
+                    response.setStores(storesByItemId.getOrDefault(item.getId(), List.of()));
+                    return response;
+                })
+                .toList();
+    }
+
+    private ItemStoreResponse toItemStoreResponse(Price price) {
+        ItemStoreResponse response = new ItemStoreResponse();
+        response.setId(price.getStore().getId());
+        response.setName(price.getStore().getName());
+        response.setPrice(price.getPrice());
+        return response;
     }
 }
