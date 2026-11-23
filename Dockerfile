@@ -6,6 +6,10 @@ WORKDIR /app
 COPY pom.xml .
 COPY mvnw .
 COPY .mvn .mvn
+
+# Make the Maven wrapper executable in the Linux container
+RUN chmod +x mvnw
+
 RUN ./mvnw dependency:go-offline -B
 
 # Copy the source code and package the application
