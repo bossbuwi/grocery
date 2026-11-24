@@ -57,6 +57,10 @@ class AuthApiTests {
         mockMvc.perform(get("/auth/me").header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.username").value("grocery-user"));
+        mockMvc.perform(get("/dashboard/summary").header("Authorization", "Bearer " + token))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.itemCount").value(0))
+                .andExpect(jsonPath("$.storeCount").value(0));
         mockMvc.perform(get("/items").header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk());
 
@@ -109,6 +113,8 @@ class AuthApiTests {
     @Test
     void rejectsMissingOrInvalidBearerTokens() throws Exception {
         mockMvc.perform(get("/items").header("Authorization", "Bearer not-a-jwt"))
+                .andExpect(status().isUnauthorized());
+        mockMvc.perform(get("/dashboard/summary"))
                 .andExpect(status().isUnauthorized());
     }
 

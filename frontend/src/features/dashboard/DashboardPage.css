@@ -1,0 +1,245 @@
+.dashboard-shell {
+  width: min(100% - 48px, 1080px);
+  min-height: 100vh;
+  margin: 0 auto;
+}
+
+.dashboard-header {
+  display: flex;
+  min-height: 96px;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgb(35 54 37 / 10%);
+}
+
+.dashboard-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #234b36;
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: -0.035em;
+}
+
+.dashboard-sign-out {
+  min-height: 40px;
+  padding: 0 16px;
+  border: 1px solid #dce3da;
+  border-radius: 9px;
+  background: rgb(255 255 253 / 75%);
+  color: #315d3d;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  transition: background 150ms ease, border-color 150ms ease;
+}
+
+.dashboard-sign-out:hover {
+  border-color: #b7c8b3;
+  background: #fff;
+}
+
+.dashboard-content {
+  max-width: 760px;
+  margin: clamp(56px, 10vh, 100px) auto 60px;
+}
+
+.dashboard-content h1 {
+  font-size: clamp(34px, 7vw, 48px);
+}
+
+.dashboard-intro {
+  margin: 14px 0 36px;
+  color: #727b72;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.dashboard-stats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+  margin-bottom: 24px;
+}
+
+.stat-card {
+  position: relative;
+  min-height: 205px;
+  overflow: hidden;
+  padding: 24px;
+  border: 1px solid rgb(35 54 37 / 8%);
+  border-radius: 18px;
+  background: rgb(255 255 253 / 94%);
+  box-shadow: 0 16px 48px rgb(34 49 34 / 6%);
+}
+
+.stat-card::after {
+  position: absolute;
+  right: -42px;
+  bottom: -64px;
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  background: rgb(224 235 215 / 35%);
+  content: "";
+}
+
+.stat-card-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.stat-icon {
+  display: grid;
+  width: 44px;
+  height: 44px;
+  place-items: center;
+  border-radius: 14px;
+}
+
+.stat-icon svg {
+  width: 23px;
+  height: 23px;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.7;
+}
+
+.stat-icon-items {
+  background: #e8f0df;
+  color: #315d3d;
+}
+
+.stat-icon-stores {
+  background: #f5ead7;
+  color: #89663a;
+}
+
+.stat-kicker {
+  color: #a0a89f;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+}
+
+.stat-label {
+  margin: 21px 0 1px;
+  color: #69736a;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.stat-value {
+  display: block;
+  color: #233d2c;
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 35px;
+  font-weight: 700;
+  letter-spacing: -0.06em;
+  line-height: 1.25;
+}
+
+.stat-caption {
+  margin: 4px 0 0;
+  color: #929991;
+  font-size: 11px;
+}
+
+.dashboard-summary-error {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin: 0 0 24px;
+  padding: 14px 16px;
+  border: 1px solid #efd0cb;
+  border-radius: 12px;
+  background: #fff8f6;
+  color: #963b35;
+  font-size: 13px;
+}
+
+.retry-button {
+  padding: 5px 8px;
+  border: 0;
+  background: transparent;
+  color: #85352f;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.retry-button:hover {
+  text-decoration: underline;
+}
+
+.dashboard-welcome-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 18px;
+  padding: 28px;
+  border: 1px solid rgb(35 54 37 / 8%);
+  border-radius: 18px;
+  background: rgb(255 255 253 / 92%);
+  box-shadow: 0 16px 48px rgb(34 49 34 / 6%);
+}
+
+.dashboard-card-icon {
+  display: grid;
+  width: 40px;
+  height: 40px;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 13px;
+  background: #e8f0df;
+  color: #315d3d;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.dashboard-welcome-card h2 {
+  margin: 1px 0 7px;
+  color: #28372c;
+  font-size: 16px;
+}
+
+.dashboard-welcome-card p {
+  max-width: 540px;
+  margin: 0;
+  color: #727b72;
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+@media (max-width: 480px) {
+  .dashboard-shell {
+    width: min(100% - 36px, 1080px);
+  }
+
+  .dashboard-header {
+    min-height: 78px;
+  }
+
+  .dashboard-content {
+    margin-top: 60px;
+  }
+
+  .dashboard-stats {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .stat-card {
+    min-height: 190px;
+    padding: 21px;
+  }
+
+  .dashboard-welcome-card {
+    gap: 14px;
+    padding: 21px;
+  }
+}
