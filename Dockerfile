@@ -1,11 +1,12 @@
 # --- Stage 1: Build the Application ---
-FROM maven:3.9-eclipse-temurin-25-alpine AS build
+FROM maven:3.9-eclipse-temurin-25 AS build
 WORKDIR /app
 
 # Copy dependency descriptors first to leverage Docker layer caching
 COPY pom.xml .
 COPY mvnw .
 COPY .mvn .mvn
+COPY frontend frontend
 
 # Make the Maven wrapper executable
 RUN chmod +x mvnw
