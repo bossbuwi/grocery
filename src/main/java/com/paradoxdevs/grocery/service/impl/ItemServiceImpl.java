@@ -7,6 +7,8 @@ import com.paradoxdevs.grocery.api.response.ItemResponse;
 import com.paradoxdevs.grocery.dto.ItemDto;
 import com.paradoxdevs.grocery.entity.Item;
 import com.paradoxdevs.grocery.entity.Price;
+import com.paradoxdevs.grocery.error.exception.ResourceHasChildrenException;
+import com.paradoxdevs.grocery.repository.BasketItemRepository;
 import com.paradoxdevs.grocery.repository.ItemRepository;
 import com.paradoxdevs.grocery.repository.PriceRepository;
 import com.paradoxdevs.grocery.service.ItemService;
@@ -24,13 +26,16 @@ import java.util.stream.Collectors;
 public class ItemServiceImpl implements ItemService {
     private final ItemRepository itemRepository;
     private final PriceRepository priceRepository;
+    private final BasketItemRepository basketItemRepository;
 
     public ItemServiceImpl(
             ItemRepository itemRepository,
-            PriceRepository priceRepository
+            PriceRepository priceRepository,
+            BasketItemRepository basketItemRepository
     ) {
         this.itemRepository = itemRepository;
         this.priceRepository = priceRepository;
+        this.basketItemRepository = basketItemRepository;
     }
 
     @Override
@@ -71,6 +76,11 @@ public class ItemServiceImpl implements ItemService {
         Optional<Item> item = itemRepository.findById(id);
         if (item.isEmpty()) {
             return false;
+        }
+
+        long basketItemCount = basketItemRepository.countByPrice_Item_Id(id);
+        if (basketItemCount > 0) {
+            throw new ResourceHasChildrenException(basketItemCount, "BasketItem");
         }
 
         priceRepository.deleteByItemId(id);

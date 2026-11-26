@@ -9,4 +9,5 @@
     <include file="changes/003-create-item-store-prices-table.xml" relativeToChangelogFile="true"/>
     <include file="changes/004-create-app-users-table.xml" relativeToChangelogFile="true"/>
     <include file="changes/005-restrict-store-deletion-with-prices.xml" relativeToChangelogFile="true"/>
+    <include file="changes/006-create-baskets.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

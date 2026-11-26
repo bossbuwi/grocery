@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+    <changeSet id="6" author="grocery">
+        <createTable tableName="baskets">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="store_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="status" type="VARCHAR(16)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint
+                baseTableName="baskets"
+                baseColumnNames="store_id"
+                constraintName="fk_baskets_store"
+                referencedTableName="stores"
+                referencedColumnNames="id"
+                onDelete="RESTRICT"/>
+        <sql>ALTER TABLE baskets ADD CONSTRAINT ck_baskets_status CHECK (status IN ('ACTIVE', 'CLOSED'))</sql>
+
+        <createTable tableName="basket_items">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="basket_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="price_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="quantity" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint
+                baseTableName="basket_items"
+                baseColumnNames="basket_id"
+                constraintName="fk_basket_items_basket"
+                referencedTableName="baskets"
+                referencedColumnNames="id"
+                onDelete="RESTRICT"/>
+        <addForeignKeyConstraint
+                baseTableName="basket_items"
+                baseColumnNames="price_id"
+                constraintName="fk_basket_items_price"
+                referencedTableName="item_store_prices"
+                referencedColumnNames="id"
+                onDelete="RESTRICT"/>
+        <addUniqueConstraint
+                tableName="basket_items"
+                columnNames="basket_id, price_id"
+                constraintName="uk_basket_items_basket_price"/>
+        <sql>ALTER TABLE basket_items ADD CONSTRAINT ck_basket_items_quantity CHECK (quantity &gt; 0)</sql>
+    </changeSet>
+</databaseChangeLog>

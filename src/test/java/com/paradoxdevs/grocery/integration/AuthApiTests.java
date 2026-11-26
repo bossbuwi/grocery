@@ -116,6 +116,8 @@ class AuthApiTests {
                 .andExpect(status().isUnauthorized());
         mockMvc.perform(get("/dashboard/summary"))
                 .andExpect(status().isUnauthorized());
+        mockMvc.perform(get("/baskets"))
+                .andExpect(status().isUnauthorized());
     }
 
     private org.springframework.test.web.servlet.ResultActions register(String username, String password)

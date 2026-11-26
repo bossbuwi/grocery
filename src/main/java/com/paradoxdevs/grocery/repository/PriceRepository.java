@@ -6,8 +6,14 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 public interface PriceRepository extends JpaRepository<Price, Long> {
+    Optional<Price> findByItemIdAndStoreId(Long itemId, Long storeId);
+
+    @EntityGraph(attributePaths = "item")
+    List<Price> findAllByItemIdInAndStoreId(Collection<Long> itemIds, Long storeId);
+
     boolean existsByItemIdAndStoreId(Long itemId, Long storeId);
 
     boolean existsByItemIdAndStoreIdAndIdNot(Long itemId, Long storeId, Long id);

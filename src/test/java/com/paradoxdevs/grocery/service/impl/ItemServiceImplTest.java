@@ -4,6 +4,7 @@ import com.paradoxdevs.grocery.api.request.ItemRequest;
 import com.paradoxdevs.grocery.api.response.ItemReadResponse;
 import com.paradoxdevs.grocery.api.response.ItemResponse;
 import com.paradoxdevs.grocery.entity.Item;
+import com.paradoxdevs.grocery.repository.BasketItemRepository;
 import com.paradoxdevs.grocery.repository.ItemRepository;
 import com.paradoxdevs.grocery.repository.PriceRepository;
 import org.junit.jupiter.api.Test;
@@ -35,6 +36,9 @@ class ItemServiceImplTest {
 
     @Mock
     private PriceRepository priceRepository;
+
+    @Mock
+    private BasketItemRepository basketItemRepository;
 
     @InjectMocks
     private ItemServiceImpl itemService;
@@ -144,6 +148,7 @@ class ItemServiceImplTest {
 
         InOrder deletionOrder = inOrder(itemRepository, priceRepository);
         deletionOrder.verify(itemRepository).findById(42L);
+        verify(basketItemRepository).countByPrice_Item_Id(42L);
         deletionOrder.verify(priceRepository).deleteByItemId(42L);
         deletionOrder.verify(itemRepository).delete(item);
     }
@@ -155,7 +160,7 @@ class ItemServiceImplTest {
         assertFalse(itemService.deleteById(404L));
 
         verify(itemRepository).findById(404L);
-        verifyNoInteractions(priceRepository);
+        verifyNoInteractions(priceRepository, basketItemRepository);
     }
 
     private Item item(Long id, String name, String barcode) {

@@ -12,6 +12,9 @@ public enum ErrorCode {
     RESOURCE_ALREADY_EXISTS(105, "The %s: %s already exists."),
     RESOURCE_NOT_FOUND(106, "The requested resource was not found."),
     RESOURCE_HAS_CHILDREN(107, "The requested resource has %s %s."),
+    BASKET_CLOSED(108, "The basket is closed and cannot be changed."),
+    BASKET_ITEM_NOT_PRICED(109, "No price is recorded for this item at the basket's store."),
+    BASKET_QUANTITY_LIMIT(110, "The quantity of an item in a basket exceeds the supported maximum."),
     INTERNAL_SERVER_ERROR(999, "Something went wrong, please contact support."),;
 
     private final int code;

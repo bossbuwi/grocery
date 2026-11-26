@@ -51,10 +51,13 @@ public class ErrorResponseBuilder {
                  INVALID_CREDENTIALS -> HttpStatus.UNAUTHORIZED;
             case UNAUTHORIZED -> HttpStatus.FORBIDDEN;
             case MALFORMED_REQUEST,
-                 REQUEST_VALIDATION_ERROR -> HttpStatus.BAD_REQUEST;
+                 REQUEST_VALIDATION_ERROR,
+                 BASKET_QUANTITY_LIMIT -> HttpStatus.BAD_REQUEST;
             case RESOURCE_NOT_FOUND -> HttpStatus.NOT_FOUND;
             case RESOURCE_ALREADY_EXISTS,
-                 RESOURCE_HAS_CHILDREN -> HttpStatus.CONFLICT;
+                 RESOURCE_HAS_CHILDREN,
+                 BASKET_CLOSED -> HttpStatus.CONFLICT;
+            case BASKET_ITEM_NOT_PRICED -> HttpStatus.NOT_FOUND;
             default -> HttpStatus.INTERNAL_SERVER_ERROR;
         };
     }

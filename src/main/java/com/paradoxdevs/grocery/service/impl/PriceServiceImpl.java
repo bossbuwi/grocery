@@ -7,6 +7,8 @@ import com.paradoxdevs.grocery.entity.Item;
 import com.paradoxdevs.grocery.entity.Price;
 import com.paradoxdevs.grocery.entity.Store;
 import com.paradoxdevs.grocery.error.exception.ResourceAlreadyExistsException;
+import com.paradoxdevs.grocery.error.exception.ResourceHasChildrenException;
+import com.paradoxdevs.grocery.repository.BasketItemRepository;
 import com.paradoxdevs.grocery.repository.ItemRepository;
 import com.paradoxdevs.grocery.repository.PriceRepository;
 import com.paradoxdevs.grocery.repository.StoreRepository;
@@ -22,15 +24,18 @@ import java.util.Optional;
 @Service
 public class PriceServiceImpl implements PriceService {
     private final PriceRepository priceRepository;
+    private final BasketItemRepository basketItemRepository;
     private final ItemRepository itemRepository;
     private final StoreRepository storeRepository;
 
     public PriceServiceImpl(
             PriceRepository priceRepository,
+            BasketItemRepository basketItemRepository,
             ItemRepository itemRepository,
             StoreRepository storeRepository
     ) {
         this.priceRepository = priceRepository;
+        this.basketItemRepository = basketItemRepository;
         this.itemRepository = itemRepository;
         this.storeRepository = storeRepository;
     }
@@ -74,6 +79,12 @@ public class PriceServiceImpl implements PriceService {
         }
 
         Price price = existingPrice.get();
+        long basketItemCount = basketItemRepository.countByPrice_Id(id);
+        if (basketItemCount > 0
+                && (!price.getItem().getId().equals(request.getItemId())
+                || !price.getStore().getId().equals(request.getStoreId()))) {
+            throw new ResourceHasChildrenException(basketItemCount, "BasketItem");
+        }
         price.setItem(item.get());
         price.setStore(store.get());
         price.setPrice(request.getPrice());
@@ -97,6 +108,11 @@ public class PriceServiceImpl implements PriceService {
         Optional<Price> price = priceRepository.findById(id);
         if (price.isEmpty()) {
             return false;
+        }
+
+        long basketItemCount = basketItemRepository.countByPrice_Id(id);
+        if (basketItemCount > 0) {
+            throw new ResourceHasChildrenException(basketItemCount, "BasketItem");
         }
 
         priceRepository.delete(price.get());
